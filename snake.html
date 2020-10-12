@@ -1,0 +1,368 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<title>Snake</title>
+</head>
+<body>
+
+	<canvas id="myCanvas" width="1280" height="720"></canvas>
+
+	<script>
+
+
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+
+
+		class snakepiece {
+
+			constructor(xpos, ypos) {
+
+				this.xpos = xpos;
+				this.ypos = ypos;
+				this.color = Math.floor(Math.random() * 3 + 2);
+				this.width = 64;
+				this.height = 64;
+				this.keyhistory = [];
+				this.movetimer = -1;
+
+			}
+
+		}
+
+		class snakeeat {
+
+			constructor() {
+				this.xpos = Math.floor(Math.random() * 10) * 64;
+				this.ypos = Math.floor(Math.random() * 10) * 64;
+				this.piece = Math.floor(Math.random() * 3);
+				this.width = 64;
+				this.height = 64;
+			}
+		}
+
+		var snakegraphics = [];
+
+		snakegraphics[0] = new Image();
+		snakegraphics[0].src = "snake1.png";
+		snakegraphics[1] = new Image();
+		snakegraphics[1].src = "snake2.png";
+		snakegraphics[2] = new Image();
+		snakegraphics[2].src = "snake3.png";
+		snakegraphics[3] = new Image();
+		snakegraphics[3].src = "snake4.png";
+		snakegraphics[4] = new Image();
+		snakegraphics[4].src = "snake5.png";
+
+		var snakeeatgraphics = [];
+		snakeeatgraphics[0] = new Image();
+		snakeeatgraphics[0].src = "eats1.png";
+		snakeeatgraphics[1] = new Image();
+		snakeeatgraphics[1].src = "eats2.png";
+		snakeeatgraphics[2] = new Image();
+		snakeeatgraphics[2].src = "eats3.png";
+
+		var snakepieces = [];
+		snakepieces[0] = new snakepiece(320, 320);
+		snakepieces[0].color = 0;
+
+
+
+		var snakeeats = [];
+		snakeeats[0] = new snakeeat();
+
+		var keypressed = [false, false, false, false];
+
+		var moving = [false, false, false, false];
+
+		var speed = 4;
+
+		var animation = 0;
+		var animationtimer = 0;
+		var youlose = 0;
+		var score = 0;
+
+		function game() {
+
+
+
+
+			if (youlose == 1) {
+
+				ctx.fillStyle = "black";
+				ctx.fillRect((c.width / 2)- 225 , c.height/2-100, 450, 200);
+
+				ctx.fillStyle = "green";
+				ctx.font = (75) + "px Arial";
+				ctx.fillText("Game Over", 450, 325);
+				ctx.fillText("Score: "+ score, 450, 425);
+
+				return;
+			}
+
+			ctx.beginPath();
+			ctx.rect(0, 0, 1280, 720);
+			ctx.fillStyle = "white";
+			ctx.fill();
+
+			ctx.lineWidth = 5;
+			ctx.strokeRect(0, 0, 1280, 720);
+
+
+			checkkeypress();
+			movesnake();
+
+
+			for (x = snakepieces.length - 1; x > 0; x--) {
+				movepieces.call(snakepieces[x]);
+			}
+
+			for (x = 0; x < snakeeats.length; x++) {
+				fruit.call(snakeeats[x],x);
+			}
+
+
+			for (x = snakepieces.length - 1; x > -1; x--) {
+				drawsnake.call(snakepieces[x]);
+			}
+
+			animationtimer++;
+
+			if (animationtimer > 5) {
+				animationtimer = 0;
+
+				resetanimate.call(snakepieces[animation])
+
+				animation++;
+
+				animate.call(snakepieces[animation])
+
+
+				if (animation > snakepieces.length) {
+					animation = 0;
+				}
+			}
+
+		}
+
+		function resetanimate() {
+
+			this.width = 64;
+			this.height = 64;
+
+		}
+
+		function animate() {
+
+			this.width = 54;
+			this.height = 54;
+
+		}
+
+		function fruit(m) {
+
+			ctx.drawImage(snakeeatgraphics[this.piece], this.xpos, this.ypos, this.width, this.height);
+
+			z = snakepieces[0].xpos - this.xpos;
+			y = snakepieces[0].ypos - this.ypos;
+
+			if (z < 64 && z > -1 &&
+				y < 64 && y > -1) {
+				score++;
+				snakeeats.splice(m,1);
+				snakeeats.push(new snakeeat());
+				if (snakepieces.length > 3) {
+					snakeeats.push(new snakeeat());
+				}
+				var snd = new Audio("gulp.mp3");
+				snd.play();
+				snakepieces.push(new snakepiece(snakepieces[0].xpos, snakepieces[0].ypos));
+
+				snakepieces[snakepieces.length - 1].keyhistory[0] = snakepieces[0].keyhistory[0];
+
+				//	for (x = 0; x < snakepieces.length-1; x++) {
+				//	snakepieces[snakepieces.length - 1].keyhistory.push(5);
+				//}a
+
+				snakepieces[snakepieces.length - 1].movetimer = (snakepieces.length - 1) * 16;
+
+			}
+
+		}
+
+		function drawsnake() {
+
+			ctx.drawImage(snakegraphics[this.color], this.xpos, this.ypos, this.width, this.height);
+
+		}
+
+
+		function movepieces() {
+
+			this.movetimer--;
+
+			if (this.movetimer > -1) {
+				return;
+			}
+
+			z = snakepieces[0].xpos - this.xpos;
+			y = snakepieces[0].ypos - this.ypos;
+
+			if (z < 0) {
+				z * -1;
+			}
+			if (y < 0) {
+				z * -1;
+			}
+
+			if (z < 32 && z > -1 &&
+				y < 32 && y > -1) {
+				youlose = 1;
+			}
+
+			if (Number.isInteger(this.xpos / 64) && Number.isInteger(this.ypos / 64)) {
+				this.keyhistory.shift();
+			}
+
+			if (this.keyhistory[0] == 0) {
+				this.xpos += speed;
+			}
+			if (this.keyhistory[0] == 1) {
+				this.xpos -= speed;
+			}
+			if (this.keyhistory[0] == 2) {
+				this.ypos -= speed;
+			}
+			if (this.keyhistory[0] == 3) {
+				this.ypos += speed;
+			}
+
+
+
+		}
+
+		function movesnake() {
+
+			if (moving[0] == true) {
+
+				if (Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+					snakepieces[0].keyhistory.push(0);
+					for (x = snakepieces.length - 1; x > 0; x--) {
+						snakepieces[x].keyhistory.push(0);
+					}
+				}
+				snakepieces[0].xpos += speed;
+			}
+			if (moving[1] == true) {
+				if (Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+					snakepieces[0].keyhistory.push(1);
+					for (x = snakepieces.length - 1; x > 0; x--) {
+						snakepieces[x].keyhistory.push(1);
+					}
+				}
+				snakepieces[0].xpos -= speed;
+			}
+			if (moving[2] == true) {
+				if (Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+					snakepieces[0].keyhistory.push(2);
+					for (x = snakepieces.length - 1; x > 0; x--) {
+						snakepieces[x].keyhistory.push(2);
+					}
+				}
+				snakepieces[0].ypos -= speed;
+			}
+			if (moving[3] == true) {
+				if (Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+					snakepieces[0].keyhistory.push(3);
+					for (x = snakepieces.length - 1; x > 0; x--) {
+						snakepieces[x].keyhistory.push(3);
+					}
+				}
+				snakepieces[0].ypos += speed;
+			}
+
+			if (snakepieces[0].keyhistory.length > 1) {
+				snakepieces[0].keyhistory.shift();
+			}
+
+			if (snakepieces[0].xpos < 0 || snakepieces[0].xpos > 1280-64 || snakepieces[0].ypos < 0 || snakepieces[0].ypos > 720-64) {
+				youlose = 1;
+			}
+		}
+
+		function checkkeypress() {
+
+			if (keypressed[0] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+				moving[0] = true;
+				moving[1] = false;
+				moving[2] = false;
+				moving[3] = false;
+			}
+			if (keypressed[1] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+				moving[0] = false;
+				moving[1] = true;
+				moving[2] = false;
+				moving[3] = false;
+			}
+			if (keypressed[2] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+				moving[0] = false;
+				moving[1] = false;
+				moving[2] = true;
+				moving[3] = false;
+			}
+			if (keypressed[3] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+				moving[0] = false;
+				moving[1] = false;
+				moving[2] = false;
+				moving[3] = true;
+			}
+		}
+
+
+		document.addEventListener("keydown", keyDown, false);
+
+		function keyDown(e) {
+
+
+			if (e.keyCode == 68) {
+				keypressed[0] = true;
+				keypressed[1] = false;
+				keypressed[2] = false;
+				keypressed[3] = false;
+			}
+			if (e.keyCode == 65) {
+				keypressed[0] = false;
+				keypressed[1] = true;
+				keypressed[2] = false;
+				keypressed[3] = false;
+			}
+			if (e.keyCode == 87) {
+				keypressed[0] = false;
+				keypressed[1] = false;
+				keypressed[2] = true;
+				keypressed[3] = false;
+			}
+			if (e.keyCode == 83) {
+				keypressed[0] = false;
+				keypressed[1] = false;
+				keypressed[2] = false;
+				keypressed[3] = true;
+			}
+
+		}
+
+		document.addEventListener("keyup", keyUp, false);
+
+		function keyUp(e) {
+
+
+		}
+
+		setInterval(game, 16);
+
+	</script>
+
+</body>
+</html>
