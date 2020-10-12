@@ -360,6 +360,49 @@
 
 		}
 
+		document.addEventListener("touchstart", touchstart, { passive: false });
+		
+
+
+		function touchstart(e) {
+
+			console.log(e.touches[0].clientY)
+
+			if (e.touches[0].clientY > window.innerHeight *0.8 ) {
+				keypressed[0] = false;
+				keypressed[1] = false;
+				keypressed[2] = false;
+				keypressed[3] = true;
+
+			}
+			if (e.touches[0].clientY < window.innerHeight *0.8) {
+				keypressed[0] = false;
+				keypressed[1] = false;
+				keypressed[2] = true;
+				keypressed[3] = false;
+
+			}
+
+			if (e.touches[0].clientX < window.innerWidth / 2 - window.innerWidth / 3) {
+				keypressed[0] = false;
+				keypressed[1] = true;
+				keypressed[2] = false;
+				keypressed[3] = false;
+			}
+
+			if (e.touches[0].clientX > window.innerWidth / 2 + window.innerWidth / 3) {
+				keypressed[0] = true;
+				keypressed[1] = false;
+				keypressed[2] = false;
+				keypressed[3] = false;
+			}
+
+
+			e.preventDefault();
+
+
+		}
+
 		setInterval(game, 16);
 
 	</script>
