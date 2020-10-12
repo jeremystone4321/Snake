@@ -371,6 +371,14 @@
 				keypressed[3] = true;
 			}
 
+			if (e.keyCode == 82) {
+				keypressed[0] = false;
+				keypressed[1] = false;
+				keypressed[2] = false;
+				keypressed[3] = false;
+				restart();
+			}
+
 		}
 
 		document.addEventListener("keyup", keyUp, false);
@@ -417,10 +425,40 @@
 				keypressed[3] = false;
 			}
 
+			if (e.touches.length > 2) {
+				keypressed[0] = false;
+				keypressed[1] = false;
+				keypressed[2] = false;
+				keypressed[3] = false;
+				restart();
+			}
 
 			e.preventDefault();
 
 
+		}
+
+		function restart() {
+
+			 snakepieces = [];
+			snakepieces[0] = new snakepiece(320, 320);
+			snakepieces[0].color = 0;
+
+
+
+			 snakeeats = [];
+			snakeeats[0] = new snakeeat();
+
+			 keypressed = [false, false, false, false];
+
+			 moving = [false, false, false, false];
+
+			 speed = 4;
+
+			 animation = 0;
+			 animationtimer = 0;
+			 youlose = 0;
+			 score = 0;
 		}
 
 		setInterval(game, 16);
