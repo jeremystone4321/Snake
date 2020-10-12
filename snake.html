@@ -295,24 +295,44 @@
 		function checkkeypress() {
 
 			if (keypressed[0] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+				if (snakepieces[1] !== undefined) {
+					if (snakepieces[1].xpos == snakepieces[0].xpos + 64 && snakepieces[1].ypos == snakepieces[0].ypos) {
+						return;
+					}
+				}
 				moving[0] = true;
 				moving[1] = false;
 				moving[2] = false;
 				moving[3] = false;
 			}
 			if (keypressed[1] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+				if (snakepieces[1] !== undefined) {
+					if (snakepieces[1].xpos == snakepieces[0].xpos - 64 && snakepieces[1].ypos == snakepieces[0].ypos) {
+						return;
+					}
+				}
 				moving[0] = false;
 				moving[1] = true;
 				moving[2] = false;
 				moving[3] = false;
 			}
 			if (keypressed[2] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+				if (snakepieces[1] !== undefined) {
+					if (snakepieces[1].xpos == snakepieces[0].xpos && snakepieces[1].ypos == snakepieces[0].ypos-64) {
+						return;
+					}
+				}
 				moving[0] = false;
 				moving[1] = false;
 				moving[2] = true;
 				moving[3] = false;
 			}
 			if (keypressed[3] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+				if (snakepieces[1] !== undefined) {
+					if (snakepieces[1].xpos == snakepieces[0].xpos && snakepieces[1].ypos == snakepieces[0].ypos + 64) {
+						return;
+					}
+				}
 				moving[0] = false;
 				moving[1] = false;
 				moving[2] = false;
