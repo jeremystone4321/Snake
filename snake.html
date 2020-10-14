@@ -84,6 +84,7 @@
 		var youlose = 0;
 		var score = 0;
 		var starttime = new Date();
+		var gameover = 0;
 
 		function game() {
 
@@ -105,8 +106,8 @@
 				ctx.fillText("Game Over", 450, 325);
 				ctx.fillText("Score: "+ score, 450, 425);
 
-				//grains();
-				//explode();
+				if (gameover == 1) { grains(); }
+				if (gameover == 2) { explode(); }
 				return;
 			}
 
@@ -580,6 +581,16 @@
 				keypressed[2] = false;
 				keypressed[3] = false;
 				restart();
+			}
+
+			if (e.keyCode == 49) {
+				gameover = 0;
+			}
+			if (e.keyCode == 50) {
+				gameover = 1;
+			}
+			if (e.keyCode == 51) {
+				gameover = 2;
 			}
 
 		}
