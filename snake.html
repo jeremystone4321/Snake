@@ -105,6 +105,7 @@
 				ctx.fillText("Game Over", 450, 325);
 				ctx.fillText("Score: "+ score, 450, 425);
 
+			//	explode();
 				grains();
 				return;
 			}
@@ -267,6 +268,57 @@
 			ctx.rect(0, 0, 1280, 720);
 			ctx.fillStyle = d;
 			ctx.fill();
+
+		}
+
+
+		var snakexplode = new Image(snakegraphics[0]);
+
+
+		var canvasss = document.createElement("canvas");
+		canvasss.width = 64;
+		canvasss.height = 64;
+
+		var ctxxx = canvasss.getContext("2d");
+
+		var falling = 0;
+
+		function explode() {
+
+			falling+=10;
+
+			var imgdata = ctx.createImageData(64,64);
+
+			for (x = 0; x < 64 * 64 * 4; x += 4) {
+				v = Math.floor(Math.random() * 255)
+				imgdata.data[x] = 0;
+				imgdata.data[x + 1] = 0;
+				if (falling < 500 && x > 0) {
+					imgdata.data[x + 1] = v;
+				}
+				if (falling <1000  && x > 4000) {
+					imgdata.data[x + 1] = v;
+				}
+				if (falling < 1500 && x > 8000) {
+					imgdata.data[x + 1] = v;
+				}
+				if (falling<2000 && x > 12000) {
+					imgdata.data[x + 1] = v;
+				}
+
+				imgdata.data[x + 2] = 0;
+				imgdata.data[x + 3] = 95;
+			}
+
+			ctxxx.putImageData(imgdata, 0, 0);
+			var d = ctx.createPattern(canvasss, "repeat");
+			ctx.rect(100, 100, 64, 64);
+			ctx.fillStyle = d;
+			ctx.fill();
+
+			//ctx.drawImage(canvasss, 100, 0, 64, 64);
+			//ctx.drawImage(offscreen, 0, 0, 64, 64);
+			//ctx.drawImage(i, 0, 0);
 
 		}
 
