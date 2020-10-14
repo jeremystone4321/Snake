@@ -83,11 +83,17 @@
 		var animationtimer = 0;
 		var youlose = 0;
 		var score = 0;
+		var starttime = new Date();
 
 		function game() {
 
+			//var started = new Date();
 
-
+			if (youlose == 800) {
+				runonce();
+				youlose = 3;
+			}
+		
 
 			if (youlose == 1) {
 
@@ -99,6 +105,7 @@
 				ctx.fillText("Game Over", 450, 325);
 				ctx.fillText("Score: "+ score, 450, 425);
 
+				grains();
 				return;
 			}
 
@@ -124,9 +131,60 @@
 			}
 
 
+			//flicker++;
 			for (x = snakepieces.length - 1; x > -1; x--) {
+				//if (snakepieces[x].movetimer < 0) {
+				//if (flicker == 4) {
+				//	flicker = 0;
+				//}
+				//if (Number.isInteger(x / 2) && (flicker==0 || flicker==1) || x==0) {
 				drawsnake.call(snakepieces[x]);
+				//}
+				//	continue;
+				//}
+				//if (Number.isInteger(x / 2)==false && (flicker == 2 || flicker==3)) {
+				//	drawsnake.call(snakepieces[x]);
+				//console.log(x)
+
+				//	continue;
+				//}
+				//	}
+				//var endtime = new Date();
+				//if (endtime - started > 16) {
+				//	if (keypressed[3] == true) { console.log(x); }
+				//	break;
+				//}
 			}
+			
+			///var endtime = new Date();
+
+			/*
+			for (x= 0; x < snakepieces.length; x++) {
+				//if (snakepieces[x].movetimer < 0) {
+				//if (flicker == 4) {
+				//	flicker = 0;
+				//}
+				//if (Number.isInteger(x / 2) && (flicker==0 || flicker==1) || x==0) {
+				drawsnake.call(snakepieces[x]);
+				//}
+				//	continue;
+				//}
+				//if (Number.isInteger(x / 2)==false && (flicker == 2 || flicker==3)) {
+				//	drawsnake.call(snakepieces[x]);
+				//console.log(x)
+
+				//	continue;
+				//}
+				//	}
+				endtime = new Date();
+				if (endtime - started > 9) {
+					if (keypressed[3] == true) { console.log(x); }
+					break;
+				}
+			}
+			*/
+
+			//console.log(endtime - started);
 
 			animationtimer++;
 
@@ -143,6 +201,89 @@
 				if (animation > snakepieces.length) {
 					animation = 0;
 				}
+			} 
+
+			var started = new Date();
+
+			for (x = 0; x < 1; x++) {
+				//var img = new Image();
+				//img.src = "1pixel.png";
+				xx = Math.random() * 1280;
+				yy = Math.random() * 720;
+				//ctx.drawImage(snakegraphics[0], 0, 32, 1, 1, xx, yy, 1, 1);
+				ctx.lineWidth = 1;
+				ctx.strokeStyle = "black";
+				ctx.beginPath();
+				ctx.moveTo(xx, yy);
+				ctx.lineTo(xx+2, yy+2);
+				ctx.stroke();
+			}
+
+			
+		//	ctx.drawImage(canvass, 0, 0);
+			//var img = new Image();
+			//img.src = imgdata;
+			//var d = ctx.createPattern(imgdata, "repeat");
+			//ctx.rect(0, 0, 1280, 720);
+			//ctx.fillStyle = d;
+			//ctx.fill();
+
+			//ctx.drawImage(img, 0, 0, 64, 64);
+
+			var endtime = new Date()
+
+			//console.log(endtime - started);
+
+			//var endtime = new Date();
+			//console.log(endtime - started)
+			//starttime = new Date();
+
+		}
+
+		var flicker = 0;
+
+		function grains() {
+
+			var canvass = document.createElement("canvas");
+			canvass.width = 64;
+			canvass.height = 64;
+
+			var ctxx = canvass.getContext("2d");
+
+
+
+			var imgdata = ctx.createImageData(64, 64)
+
+			for (x = 0; x < 64 * 64 * 4; x += 4) {
+				v = Math.floor(Math.random() * 255)
+				imgdata.data[x] = v;
+				imgdata.data[x + 1] = v;
+				imgdata.data[x + 2] = v;
+				imgdata.data[x + 3] = 95;
+			}
+
+			ctxx.putImageData(imgdata, 0, 0);
+			var d = ctx.createPattern(canvass, "repeat");
+			ctx.rect(0, 0, 1280, 720);
+			ctx.fillStyle = d;
+			ctx.fill();
+
+		}
+
+		function runonce() {
+
+			for (x = 0; x < 5000; x++) {
+
+
+				snakepieces.push(new snakepiece(snakepieces[0].xpos, snakepieces[0].ypos));
+
+				snakepieces[snakepieces.length - 1].keyhistory[0] = snakepieces[0].keyhistory[0];
+
+				//	for (x = 0; x < snakepieces.length-1; x++) {
+				//	snakepieces[snakepieces.length - 1].keyhistory.push(5);
+				//}a
+
+				snakepieces[snakepieces.length - 1].movetimer = (snakepieces.length - 1) * 16;
 			}
 
 		}
@@ -394,7 +535,7 @@
 
 		function touchstart(e) {
 
-			console.log(e.touches[0].clientY)
+			//console.log(e.touches[0].clientY)
 
 			if (e.touches[0].clientY > window.innerHeight *0.8 ) {
 				keypressed[0] = false;
