@@ -1,0 +1,733 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Snake</title>
+</head>
+
+<body>
+
+    <canvas id="myCanvas" width="1280" height="720"></canvas>
+
+    <script>
+
+
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+
+
+        class snakepiece {
+
+            constructor(xpos, ypos) {
+
+                this.xpos = xpos;
+                this.ypos = ypos;
+                this.color = Math.floor(Math.random() * 3 + 2);
+                this.width = 64;
+                this.height = 64;
+                this.keyhistory = [];
+                this.movetimer = -1;
+
+            }
+
+        }
+
+        class snakeeat {
+
+            constructor() {
+                this.xpos = Math.floor(Math.random() * 10) * 64;
+                this.ypos = Math.floor(Math.random() * 10) * 64;
+                this.piece = Math.floor(Math.random() * 3);
+                this.width = 64;
+                this.height = 64;
+            }
+        }
+
+        var snakegraphics = [];
+
+        snakegraphics[0] = new Image();
+        snakegraphics[0].src = "snake1.png";
+        snakegraphics[1] = new Image();
+        snakegraphics[1].src = "snake2.png";
+        snakegraphics[2] = new Image();
+        snakegraphics[2].src = "snake3.png";
+        snakegraphics[3] = new Image();
+        snakegraphics[3].src = "snake4.png";
+        snakegraphics[4] = new Image();
+        snakegraphics[4].src = "snake5.png";
+
+        var snakeeatgraphics = [];
+        snakeeatgraphics[0] = new Image();
+        snakeeatgraphics[0].src = "eats1.png";
+        snakeeatgraphics[1] = new Image();
+        snakeeatgraphics[1].src = "eats2.png";
+        snakeeatgraphics[2] = new Image();
+        snakeeatgraphics[2].src = "eats3.png";
+
+        var snakepieces = [];
+        snakepieces[0] = new snakepiece(320, 320);
+        snakepieces[0].color = 0;
+
+
+
+        var snakeeats = [];
+        snakeeats[0] = new snakeeat();
+
+        var keypressed = [false, false, false, false];
+
+        var moving = [false, false, false, false];
+
+        var speed = 4;
+
+        var animation = 0;
+        var animationtimer = 0;
+        var youlose = 0;
+        var score = 0;
+        var starttime = new Date();
+        var gameover = 0;
+
+        function game() {
+
+            //var started = new Date();
+
+            if (youlose == 800) {
+                runonce();
+                youlose = 3;
+            }
+
+
+            if (youlose == 1) {
+
+
+                if (gameover == 1) { grains(); }
+                if (gameover == 2) { 
+
+                    falling += 32;
+            if (falling > 8000) {
+                falling = 8000;
+            }
+            plodtimer++;
+            if (plodtimer==6){
+                plodtimer=0;
+            }
+            
+            for (x = 0; x < snakepieces.length; x++) {
+                    explode.call(snakepieces[x]);
+            }
+                }
+
+                ctx.beginPath();
+            ctx.rect(0, 0, 1280, 720);
+            ctx.lineWidth = 5;
+            ctx.strokeRect(0, 0, 1280, 720);
+
+                ctx.fillStyle = "black";
+                ctx.fillRect((c.width / 2) - 225, c.height / 2 - 100, 450, 200);
+
+                ctx.fillStyle = "green";
+                ctx.font = (75) + "px Arial";
+                ctx.fillText("Game Over", 450, 325);
+                ctx.fillText("Score: " + score, 450, 425);
+                return;
+             
+            }
+
+            ctx.beginPath();
+            ctx.rect(0, 0, 1280, 720);
+            ctx.fillStyle = "white";
+            ctx.fill();
+
+            ctx.lineWidth = 5;
+            ctx.strokeRect(0, 0, 1280, 720);
+
+
+            checkkeypress();
+            movesnake();
+
+
+            for (x = snakepieces.length - 1; x > 0; x--) {
+                movepieces.call(snakepieces[x]);
+            }
+
+            for (x = 0; x < snakeeats.length; x++) {
+                fruit.call(snakeeats[x], x);
+            }
+
+
+            //flicker++;
+            for (x = snakepieces.length - 1; x > -1; x--) {
+                //if (snakepieces[x].movetimer < 0) {
+                //if (flicker == 4) {
+                //	flicker = 0;
+                //}
+                //if (Number.isInteger(x / 2) && (flicker==0 || flicker==1) || x==0) {
+                drawsnake.call(snakepieces[x]);
+                //}
+                //	continue;
+                //}
+                //if (Number.isInteger(x / 2)==false && (flicker == 2 || flicker==3)) {
+                //	drawsnake.call(snakepieces[x]);
+                //console.log(x)
+
+                //	continue;
+                //}
+                //	}
+                //var endtime = new Date();
+                //if (endtime - started > 16) {
+                //	if (keypressed[3] == true) { console.log(x); }
+                //	break;
+                //}
+            }
+
+            ///var endtime = new Date();
+
+            /*
+            for (x= 0; x < snakepieces.length; x++) {
+                //if (snakepieces[x].movetimer < 0) {
+                //if (flicker == 4) {
+                //	flicker = 0;
+                //}
+                //if (Number.isInteger(x / 2) && (flicker==0 || flicker==1) || x==0) {
+                drawsnake.call(snakepieces[x]);
+                //}
+                //	continue;
+                //}
+                //if (Number.isInteger(x / 2)==false && (flicker == 2 || flicker==3)) {
+                //	drawsnake.call(snakepieces[x]);
+                //console.log(x)
+
+                //	continue;
+                //}
+                //	}
+                endtime = new Date();
+                if (endtime - started > 9) {
+                    if (keypressed[3] == true) { console.log(x); }
+                    break;
+                }
+            }
+            */
+
+            //console.log(endtime - started);
+
+            animationtimer++;
+
+            if (animationtimer > 5) {
+                animationtimer = 0;
+
+                resetanimate.call(snakepieces[animation])
+
+                animation++;
+
+                animate.call(snakepieces[animation])
+
+
+                if (animation > snakepieces.length) {
+                    animation = 0;
+                }
+            }
+
+            var started = new Date();
+
+/*
+            for (x = 0; x < 1; x++) {
+                //var img = new Image();
+                //img.src = "1pixel.png";
+                xx = Math.random() * 1280;
+                yy = Math.random() * 720;
+                //ctx.drawImage(snakegraphics[0], 0, 32, 1, 1, xx, yy, 1, 1);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = "black";
+                ctx.beginPath();
+                ctx.moveTo(xx, yy);
+                ctx.lineTo(xx + 2, yy + 2);
+                ctx.stroke();
+            }
+*/
+
+            //	ctx.drawImage(canvass, 0, 0);
+            //var img = new Image();
+            //img.src = imgdata;
+            //var d = ctx.createPattern(imgdata, "repeat");
+            //ctx.rect(0, 0, 1280, 720);
+            //ctx.fillStyle = d;
+            //ctx.fill();
+
+            //ctx.drawImage(img, 0, 0, 64, 64);
+
+            var endtime = new Date()
+
+            //console.log(endtime - started);
+
+            //var endtime = new Date();
+            //console.log(endtime - started)
+            //starttime = new Date();
+
+        }
+
+        var flicker = 0;
+
+        function grains() {
+
+            var canvass = document.createElement("canvas");
+            canvass.width = 64;
+            canvass.height = 64;
+
+            var ctxx = canvass.getContext("2d");
+
+
+
+            var imgdata = ctx.createImageData(64, 64)
+
+            for (x = 0; x < 64 * 64 * 4; x += 4) {
+                v = Math.floor(Math.random() * 255)
+                imgdata.data[x] = v;
+                imgdata.data[x + 1] = v;
+                imgdata.data[x + 2] = v;
+                imgdata.data[x + 3] = 95;
+            }
+
+            ctxx.putImageData(imgdata, 0, 0);
+            var d = ctx.createPattern(canvass, "repeat");
+            ctx.rect(0, 0, 1280, 720);
+            ctx.fillStyle = d;
+            ctx.fill();
+
+        }
+
+
+        var snakexplode = new Image();
+        snakexplode.src = "data:image/gif;base64,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";
+
+
+        var canvasss = document.createElement("canvas");
+        canvasss.width = 64;
+        canvasss.height = 64;
+
+        var ctxxx = canvasss.getContext("2d");
+
+        ctxxx.drawImage(snakexplode, 0, 0, 64, 64)
+
+        var falling = 0;
+        var plodtimer=0;
+
+        function explode() {
+
+            
+
+            //var imgdata = ctx.createImageData(64,64);
+            var imgdata = ctxxx.getImageData(0, 0, 64, 64);
+
+if (plodtimer==5){
+            for (x = 0; x < 64 * 64 * 4; x += 4) {
+
+                v = Math.floor(Math.random() * 255)
+                imgdata.data[x] = 0;
+                if (imgdata.data[x + 1 + (64*4)] > 0 && imgdata.data[x + 1 + (64*4)] !==255) {
+                  //  if (x > falling) {
+                        imgdata.data[x + 1] = v;
+                   // }
+                    //if (falling <1000  && x > 4000) {
+                    //	imgdata.data[x + 1] = v;
+                    //}
+                    //if (falling < 1500 && x > 8000) {
+                    //	imgdata.data[x + 1] = v;
+                    //}
+                    //if (falling<2000 && x > 12000) {
+                    //	imgdata.data[x + 1] = v;
+                    //}
+                }
+                else{
+
+                    
+                imgdata.data[x + 1] = 0;
+                }
+
+
+                    if (x > 16000 - falling) {
+                      //  imgdata.data[x + 1] = 175;
+                    }
+                imgdata.data[x + 2] = 0;
+                imgdata.data[x + 3] = 12;
+
+                if (imgdata.data[x + 1]== 0 || imgdata.data[x + 1]== 255){
+                    
+                imgdata.data[x] = 255;
+                imgdata.data[x + 1] = 255;
+                imgdata.data[x + 2] = 255;
+                imgdata.data[x + 3] = 75;
+                }
+
+
+                //imgdata.data[x] = 255;
+                //imgdata.data[x + 1] = 255;
+                //imgdata.data[x+2] = 255;
+                //imgdata.data[x + 3] = 75;
+            }
+}
+
+            ctxxx.putImageData(imgdata, 0, 0);
+
+            var d = ctx.createPattern(canvasss, "repeat");
+            ctx.rect(100, 100, 256, 256);
+            ctx.fillStyle = d;
+            //ctx.fill();
+
+            ctx.drawImage(canvasss, this.xpos, this.ypos, 74, 64);
+            //ctx.drawImage(canvasss, 320, 0, 64, 64);
+            //ctx.drawImage(offscreen, 0, 0, 64, 64);
+            //ctx.drawImage(i, 0, 0);
+
+        }
+
+        function runonce() {
+
+            for (x = 0; x < 5000; x++) {
+
+
+                snakepieces.push(new snakepiece(snakepieces[0].xpos, snakepieces[0].ypos));
+
+                snakepieces[snakepieces.length - 1].keyhistory[0] = snakepieces[0].keyhistory[0];
+
+                //	for (x = 0; x < snakepieces.length-1; x++) {
+                //	snakepieces[snakepieces.length - 1].keyhistory.push(5);
+                //}a
+
+                snakepieces[snakepieces.length - 1].movetimer = (snakepieces.length - 1) * 16;
+            }
+
+        }
+
+        function resetanimate() {
+
+            this.width = 64;
+            this.height = 64;
+
+        }
+
+        function animate() {
+
+            this.width = 54;
+            this.height = 54;
+
+        }
+
+        function fruit(m) {
+
+            ctx.drawImage(snakeeatgraphics[this.piece], this.xpos, this.ypos, this.width, this.height);
+
+            z = snakepieces[0].xpos - this.xpos;
+            y = snakepieces[0].ypos - this.ypos;
+
+            if (z < 64 && z > -1 &&
+                y < 64 && y > -1) {
+                score++;
+                snakeeats.splice(m, 1);
+                snakeeats.push(new snakeeat());
+                if (snakepieces.length > 3) {
+                    snakeeats.push(new snakeeat());
+                }
+                var snd = new Audio("gulp.mp3");
+                snd.play();
+                snakepieces.push(new snakepiece(snakepieces[0].xpos, snakepieces[0].ypos));
+
+                snakepieces[snakepieces.length - 1].keyhistory[0] = snakepieces[0].keyhistory[0];
+
+                //	for (x = 0; x < snakepieces.length-1; x++) {
+                //	snakepieces[snakepieces.length - 1].keyhistory.push(5);
+                //}a
+
+                snakepieces[snakepieces.length - 1].movetimer = (snakepieces.length - 1) * 16;
+
+            }
+
+        }
+
+        function drawsnake() {
+
+            ctx.drawImage(snakegraphics[this.color], this.xpos, this.ypos, this.width, this.height);
+
+        }
+
+
+        function movepieces() {
+
+            this.movetimer--;
+
+            if (this.movetimer > -1) {
+                return;
+            }
+
+            z = snakepieces[0].xpos - this.xpos;
+            y = snakepieces[0].ypos - this.ypos;
+
+            if (z < 0) {
+                z * -1;
+            }
+            if (y < 0) {
+                z * -1;
+            }
+
+            if (z < 32 && z > -1 &&
+                y < 32 && y > -1) {
+                youlose = 1;
+            }
+
+            if (Number.isInteger(this.xpos / 64) && Number.isInteger(this.ypos / 64)) {
+                this.keyhistory.shift();
+            }
+
+            if (this.keyhistory[0] == 0) {
+                this.xpos += speed;
+            }
+            if (this.keyhistory[0] == 1) {
+                this.xpos -= speed;
+            }
+            if (this.keyhistory[0] == 2) {
+                this.ypos -= speed;
+            }
+            if (this.keyhistory[0] == 3) {
+                this.ypos += speed;
+            }
+
+
+
+        }
+
+        function movesnake() {
+
+            if (moving[0] == true) {
+
+                if (Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+                    snakepieces[0].keyhistory.push(0);
+                    for (x = snakepieces.length - 1; x > 0; x--) {
+                        snakepieces[x].keyhistory.push(0);
+                    }
+                }
+                snakepieces[0].xpos += speed;
+            }
+            if (moving[1] == true) {
+                if (Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+                    snakepieces[0].keyhistory.push(1);
+                    for (x = snakepieces.length - 1; x > 0; x--) {
+                        snakepieces[x].keyhistory.push(1);
+                    }
+                }
+                snakepieces[0].xpos -= speed;
+            }
+            if (moving[2] == true) {
+                if (Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+                    snakepieces[0].keyhistory.push(2);
+                    for (x = snakepieces.length - 1; x > 0; x--) {
+                        snakepieces[x].keyhistory.push(2);
+                    }
+                }
+                snakepieces[0].ypos -= speed;
+            }
+            if (moving[3] == true) {
+                if (Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+                    snakepieces[0].keyhistory.push(3);
+                    for (x = snakepieces.length - 1; x > 0; x--) {
+                        snakepieces[x].keyhistory.push(3);
+                    }
+                }
+                snakepieces[0].ypos += speed;
+            }
+
+            if (snakepieces[0].keyhistory.length > 1) {
+                snakepieces[0].keyhistory.shift();
+            }
+
+            if (snakepieces[0].xpos < 0 || snakepieces[0].xpos > 1280 - 64 || snakepieces[0].ypos < 0 || snakepieces[0].ypos > 720 - 64) {
+                youlose = 1;
+            }
+        }
+
+        function checkkeypress() {
+
+            if (keypressed[0] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+                if (snakepieces[1] !== undefined) {
+                    if (snakepieces[1].xpos == snakepieces[0].xpos + 64 && snakepieces[1].ypos == snakepieces[0].ypos) {
+                        return;
+                    }
+                }
+                moving[0] = true;
+                moving[1] = false;
+                moving[2] = false;
+                moving[3] = false;
+            }
+            if (keypressed[1] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+                if (snakepieces[1] !== undefined) {
+                    if (snakepieces[1].xpos == snakepieces[0].xpos - 64 && snakepieces[1].ypos == snakepieces[0].ypos) {
+                        return;
+                    }
+                }
+                moving[0] = false;
+                moving[1] = true;
+                moving[2] = false;
+                moving[3] = false;
+            }
+            if (keypressed[2] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+                if (snakepieces[1] !== undefined) {
+                    if (snakepieces[1].xpos == snakepieces[0].xpos && snakepieces[1].ypos == snakepieces[0].ypos - 64) {
+                        return;
+                    }
+                }
+                moving[0] = false;
+                moving[1] = false;
+                moving[2] = true;
+                moving[3] = false;
+            }
+            if (keypressed[3] == true && Number.isInteger(snakepieces[0].xpos / 64) && Number.isInteger(snakepieces[0].ypos / 64)) {
+                if (snakepieces[1] !== undefined) {
+                    if (snakepieces[1].xpos == snakepieces[0].xpos && snakepieces[1].ypos == snakepieces[0].ypos + 64) {
+                        return;
+                    }
+                }
+                moving[0] = false;
+                moving[1] = false;
+                moving[2] = false;
+                moving[3] = true;
+            }
+        }
+
+
+        document.addEventListener("keydown", keyDown, false);
+
+        function keyDown(e) {
+
+
+            if (e.keyCode == 68) {
+                keypressed[0] = true;
+                keypressed[1] = false;
+                keypressed[2] = false;
+                keypressed[3] = false;
+            }
+            if (e.keyCode == 65) {
+                keypressed[0] = false;
+                keypressed[1] = true;
+                keypressed[2] = false;
+                keypressed[3] = false;
+            }
+            if (e.keyCode == 87) {
+                keypressed[0] = false;
+                keypressed[1] = false;
+                keypressed[2] = true;
+                keypressed[3] = false;
+            }
+            if (e.keyCode == 83) {
+                keypressed[0] = false;
+                keypressed[1] = false;
+                keypressed[2] = false;
+                keypressed[3] = true;
+            }
+
+            if (e.keyCode == 82) {
+                keypressed[0] = false;
+                keypressed[1] = false;
+                keypressed[2] = false;
+                keypressed[3] = false;
+                falling = 0;
+                restart();
+            }
+
+            if (e.keyCode == 49) {
+                gameover = 0;
+            }
+            if (e.keyCode == 50) {
+                gameover = 1;
+            }
+            if (e.keyCode == 51) {
+                gameover = 2;
+            }
+
+        }
+
+        document.addEventListener("keyup", keyUp, false);
+
+        function keyUp(e) {
+
+
+        }
+
+        document.addEventListener("touchstart", touchstart, { passive: false });
+
+
+
+        function touchstart(e) {
+
+            //console.log(e.touches[0].clientY)
+
+            if (e.touches[0].clientY > window.innerHeight * 0.8) {
+                keypressed[0] = false;
+                keypressed[1] = false;
+                keypressed[2] = false;
+                keypressed[3] = true;
+
+            }
+            if (e.touches[0].clientY < window.innerHeight * 0.8) {
+                keypressed[0] = false;
+                keypressed[1] = false;
+                keypressed[2] = true;
+                keypressed[3] = false;
+
+            }
+
+            if (e.touches[0].clientX < window.innerWidth / 2 - window.innerWidth / 3) {
+                keypressed[0] = false;
+                keypressed[1] = true;
+                keypressed[2] = false;
+                keypressed[3] = false;
+            }
+
+            if (e.touches[0].clientX > window.innerWidth / 2 + window.innerWidth / 3) {
+                keypressed[0] = true;
+                keypressed[1] = false;
+                keypressed[2] = false;
+                keypressed[3] = false;
+            }
+
+            if (e.touches.length > 2) {
+                keypressed[0] = false;
+                keypressed[1] = false;
+                keypressed[2] = false;
+                keypressed[3] = false;
+                restart();
+            }
+
+            e.preventDefault();
+
+
+        }
+
+        function restart() {
+
+            snakepieces = [];
+            snakepieces[0] = new snakepiece(320, 320);
+            snakepieces[0].color = 0;
+
+
+
+            snakeeats = [];
+            snakeeats[0] = new snakeeat();
+
+            keypressed = [false, false, false, false];
+
+            moving = [false, false, false, false];
+
+            speed = 4;
+
+            animation = 0;
+            animationtimer = 0;
+            youlose = 0;
+            score = 0;
+        }
+
+        setInterval(game, 16);
+
+    </script>
+
+</body>
+
+</html>
