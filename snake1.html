@@ -101,7 +101,6 @@
             if (youlose == 1) {
 
 
-                if (gameover == 1) { grains(); }
                 if (gameover == 2) { 
 
                     falling += 32;
@@ -130,6 +129,8 @@
                 ctx.font = (75) + "px Arial";
                 ctx.fillText("Game Over", 450, 325);
                 ctx.fillText("Score: " + score, 450, 425);
+                
+                if (gameover == 1) { grains(); }
                 return;
              
             }
